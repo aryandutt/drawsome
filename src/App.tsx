@@ -1,82 +1,83 @@
 import rough from "roughjs";
 import { useEffect, useRef, useState } from "react";
 import { CoordinateInterface } from "./util/types";
+import ToolBar from "./components/ToolBar";
+import getShape from "./util/getShape";
 
 function App() {
+  const [tool, setTool] = useState<string>("line");
   const [drawings, setDrawings] = useState<SVGElement[]>([]);
+  const [preview, setPreview] = useState<SVGElement | null>(null);
 
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const svgRef = useRef<SVGSVGElement | null>(null);
 
-  const [startPoint, setStartPoint] = useState<CoordinateInterface>({ x: -1, y: -1 });
+  const isDragging = useRef<boolean>(false);
+
+  const [startPoint, setStartPoint] = useState<CoordinateInterface>({
+    x: 0,
+    y: 0,
+  });
   const [endPoint, setEndPoint] = useState<CoordinateInterface>({ x: 0, y: 0 });
 
-  const currEndPoint = useRef<CoordinateInterface>({x: 0, y: 0});
+  const currEndPoint = useRef<CoordinateInterface>({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (!svgRef.current) return;
+    if (!svgRef.current || !preview) return;
+
+    svgRef.current.innerHTML = "";
 
     drawings.forEach((child) => {
       svgRef.current?.appendChild(child);
     });
 
-  }, [drawings]);
+    svgRef.current?.appendChild(preview);
+  }, [drawings, preview]);
 
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    setIsDragging(true);
+    isDragging.current = true;
     setStartPoint({ x: e.clientX, y: e.clientY });
+    setEndPoint({ x: e.clientX, y: e.clientY });
   };
 
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    if(!isDragging) return;
+    if (!isDragging.current) return;
 
     setEndPoint({ x: e.clientX, y: e.clientY });
 
-    currEndPoint.current = {x: e.clientX, y: e.clientY};
+    currEndPoint.current = { x: e.clientX, y: e.clientY };
 
-    const svgElement = svgRef.current;
+    const shape = getShape({
+      startPoint: startPoint,
+      endPoint: currEndPoint.current,
+      shape: tool,
+      svgRef: svgRef,
+    });
 
-    if (!svgElement) return;
+    if (!shape) return;
 
-    const roughSvg = rough.svg(svgElement);
-
-    const line = roughSvg.line(
-      startPoint.x,
-      startPoint.y,
-      currEndPoint.current.x,
-      currEndPoint.current.y
-    );
-
-    const newDrawing = drawings;
-
-    newDrawing.pop()
-
-    setDrawings([...newDrawing, line]);
+    setPreview(shape);
 
   };
 
   const handleMouseUp = () => {
 
-    const svgElement = svgRef.current;
+    const shape = getShape({
+      startPoint: startPoint,
+      endPoint: endPoint,
+      shape: tool,
+      svgRef: svgRef,
+    });
 
-    if (!svgElement) return;
+    if (!shape) return;
 
-    const roughSvg = rough.svg(svgElement);
+    setDrawings([...drawings, shape]);
 
-    const line = roughSvg.line(
-      startPoint.x,
-      startPoint.y,
-      endPoint.x,
-      endPoint.y
-    );
-
-    setDrawings([...drawings, line]);
-    
-    setIsDragging(false);
+    isDragging.current = false;
   };
 
   return (
-    <>
+    <div className="relative">
+      <ToolBar tool={tool} setTool={setTool} />
       <svg
         ref={svgRef}
         width={window.innerWidth}
@@ -85,7 +86,7 @@ function App() {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       />
-    </>
+    </div>
   );
 }
 
