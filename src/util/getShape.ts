@@ -1,37 +1,30 @@
 import rough from "roughjs";
-import { GetShapeProps } from "./types";
+import { GetShapeProps, ShapeMethodTypes } from "./types";
+import getShapeParams from "./getShapeParams";
 
-const getShape = ({startPoint, endPoint, shape, svgRef}: GetShapeProps) => {
+const getShape = ({ startPoint, endPoint, shape, svgRef }: GetShapeProps) => {
+  if (!svgRef || !svgRef.current) return null; // returns if svgRef does not point to svg element
 
-    if(!svgRef || !svgRef.current) return null;
+  const roughSvg = rough.svg(svgRef.current);
 
-    if(shape === 'line'){
-        
-        const roughSvg = rough.svg(svgRef.current);
-        const line = roughSvg.line(
-        startPoint.x,
-        startPoint.y,
-        endPoint.x,
-        endPoint.y
-        );
+  //initialise a map which fetches the method corresponding to the shape
+  const shapeMethods: ShapeMethodTypes = {
+    line: roughSvg.line.bind(roughSvg),
+    rectangle: roughSvg.rectangle.bind(roughSvg),
+    ellipse: roughSvg.ellipse.bind(roughSvg),
+    circle: roughSvg.circle.bind(roughSvg),
+  };
 
-        return line;
-    }
-    if(shape === 'rectangle'){
+  const shapeFunction = shapeMethods[shape as keyof ShapeMethodTypes]; // fetching the function corresponding to the shape
 
-        const roughSvg = rough.svg(svgRef.current);
+  const params = getShapeParams({ startPoint, endPoint, shape }); // a function that returns the right parameter given the set of start point, end point and the type of shape
 
-        const rectangle = roughSvg.rectangle(
-        startPoint.x,
-        startPoint.y,
-        endPoint.x - startPoint.x,
-        endPoint.y - startPoint.y
-        );
+  const drawnShape = shapeFunction(
+    // @ts-ignore
+    ...params
+  );
 
-        return rectangle;
-
-    }
-
-}
+  return drawnShape; //returning the final shape which is drawn
+};
 
 export default getShape;

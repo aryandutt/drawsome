@@ -1,11 +1,10 @@
-import rough from "roughjs";
 import { useEffect, useRef, useState } from "react";
-import { CoordinateInterface } from "./util/types";
-import ToolBar from "./components/ToolBar";
+import { CoordinateInterface, tool } from "./util/types";
+import TopBar from "./components/TopBar";
 import getShape from "./util/getShape";
 
 function App() {
-  const [tool, setTool] = useState<string>("line");
+  const [tool, setTool] = useState<tool>("line");
   const [drawings, setDrawings] = useState<SVGElement[]>([]);
   const [preview, setPreview] = useState<SVGElement | null>(null);
 
@@ -70,6 +69,8 @@ function App() {
 
     if (!shape) return;
 
+    console.log(shape);
+
     setDrawings([...drawings, shape]);
 
     isDragging.current = false;
@@ -77,7 +78,7 @@ function App() {
 
   return (
     <div className="relative">
-      <ToolBar tool={tool} setTool={setTool} />
+      <TopBar tool={tool} setTool={setTool} />
       <svg
         ref={svgRef}
         width={window.innerWidth}
