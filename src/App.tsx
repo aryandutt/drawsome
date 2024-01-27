@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { CoordinateInterface, tool } from "./util/types";
+import { CoordinateInterface, ToolsType } from "./util/types";
 import TopBar from "./components/TopBar";
 import getShape from "./util/getShape";
 
 function App() {
-  const [tool, setTool] = useState<tool>("line");
+  const [tool, setTool] = useState<ToolsType>("line");
   const [drawings, setDrawings] = useState<SVGElement[]>([]);
   const [preview, setPreview] = useState<SVGElement | null>(null);
 

@@ -1,7 +1,7 @@
 import{ Dispatch, SetStateAction } from 'react'
 import { Options } from 'roughjs/bin/core';
 
-export enum tools {
+export enum Tools {
     Line = "line",
     Rectangle = "rectangle",
     Ellipse = "ellipse",
@@ -9,7 +9,7 @@ export enum tools {
     Pointer = "pointer",
 }
 
-export type tool = `${tools}`;
+export type ToolsType = `${Tools}`;
 
 export interface CoordinateInterface {
     x: number;
@@ -17,7 +17,7 @@ export interface CoordinateInterface {
 }
 
 export interface TopBarProps {
-    setTool: Dispatch<SetStateAction<tool>>;
+    setTool: Dispatch<SetStateAction<ToolsType>>;
     tool: string;
 }
 

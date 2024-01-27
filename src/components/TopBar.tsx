@@ -1,10 +1,10 @@
 import React from 'react'
-import { TopBarProps, tool } from '../util/types'
+import { TopBarProps, ToolsType } from '../util/types'
 
 const TopBar: React.FC<TopBarProps> = ({tool, setTool}) => {
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        setTool(e.target.value as tool);
+        setTool(e.target.value as ToolsType);
     }
 
   return (
