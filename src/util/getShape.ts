@@ -1,10 +1,10 @@
 import rough from "roughjs";
-import { GetShapeProps, ShapeMethodTypes } from "./types";
+import { GetShapeProps, ShapeMethodTypes, Tools } from "./types";
 import getShapeParams from "./getShapeParams";
 
 const getShape = ({ startPoint, endPoint, shape, svgRef }: GetShapeProps) => {
 
-  if (!svgRef || !svgRef.current) return null; // returns if svgRef does not point to svg element
+  if (!svgRef || !svgRef.current || shape === Tools.Pointer) return null; // returns if svgRef does not point to svg element
 
   const roughSvg = rough.svg(svgRef.current);
 

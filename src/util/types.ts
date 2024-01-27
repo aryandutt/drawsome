@@ -28,6 +28,12 @@ export interface GetShapeProps {
     svgRef: React.MutableRefObject<SVGSVGElement | null>;
 }
 
+export interface DrawingsElement {
+    startPoint: CoordinateInterface;
+    endPoint: CoordinateInterface;
+    shape: ToolsType;
+}
+
 export interface ShapeMethodTypes {
     line: (x1: number, y1: number, x2: number, y2: number, options?: Options | undefined) => SVGGElement;
     rectangle: (x: number, y: number, width: number, height: number, options?: Options | undefined) => SVGGElement;

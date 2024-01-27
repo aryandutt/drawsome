@@ -1,36 +1,39 @@
 import { useEffect, useRef, useState } from "react";
-import { CoordinateInterface, ToolsType } from "./util/types";
+import { CoordinateInterface, DrawingsElement, Tools, ToolsType } from "./util/types";
 import TopBar from "./components/TopBar";
 import getShape from "./util/getShape";
 
 function App() {
   const [tool, setTool] = useState<ToolsType>("line");
-  const [drawings, setDrawings] = useState<SVGElement[]>([]);
+  const [drawings, setDrawings] = useState<DrawingsElement[]>([]);
   const [preview, setPreview] = useState<SVGElement | null>(null);
+  const [viewBox, setViewBox] = useState({ x: 0, y: 0, w: window.innerWidth, h: window.innerHeight });
 
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const isDragging = useRef<boolean>(false);
 
-  const [startPoint, setStartPoint] = useState<CoordinateInterface>({
-    x: 0,
-    y: 0,
-  });
+  const [startPoint, setStartPoint] = useState<CoordinateInterface>({x: 0, y: 0});
+
   const [endPoint, setEndPoint] = useState<CoordinateInterface>({ x: 0, y: 0 });
 
-  const currEndPoint = useRef<CoordinateInterface>({ x: 0, y: 0 });
-
   useEffect(() => {
-    if (!svgRef.current || !preview) return;
+    if (!svgRef.current) return;
 
     svgRef.current.innerHTML = "";
 
     drawings.forEach((child) => {
-      svgRef.current?.appendChild(child);
+      const shape = getShape({startPoint: child.startPoint, endPoint: child.endPoint, shape: child.shape, svgRef})
+      if(!shape) return;
+      svgRef.current?.appendChild(shape);
     });
 
+    if(!preview) return;
+
     svgRef.current?.appendChild(preview);
+    
   }, [drawings, preview]);
+
 
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     isDragging.current = true;
@@ -41,13 +44,24 @@ function App() {
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     if (!isDragging.current) return;
 
+    if(tool === Tools.Pointer){
+      const dx = e.clientX - startPoint.x;
+      const dy = e.clientY - startPoint.y;
+      setViewBox({
+        x: viewBox.x - dx,
+        y: viewBox.y - dy,
+        w: viewBox.w,
+        h: viewBox.h
+      });
+      setStartPoint({x: e.clientX, y: e.clientY});
+      return;
+    }
+
     setEndPoint({ x: e.clientX, y: e.clientY });
 
-    currEndPoint.current = { x: e.clientX, y: e.clientY };
-
     const shape = getShape({
-      startPoint: startPoint,
-      endPoint: currEndPoint.current,
+      startPoint: {x: startPoint.x + viewBox.x, y: startPoint.y+viewBox.y},
+      endPoint: {x: endPoint.x+ viewBox.x, y: endPoint.y+viewBox.y},
       shape: tool,
       svgRef: svgRef,
     });
@@ -60,18 +74,18 @@ function App() {
 
   const handleMouseUp = () => {
 
-    const shape = getShape({
-      startPoint: startPoint,
-      endPoint: endPoint,
+    isDragging.current = false;
+
+    const newShape = {
+      startPoint: {x: startPoint.x + viewBox.x, y: startPoint.y+viewBox.y},
+      endPoint: {x: endPoint.x+ viewBox.x, y: endPoint.y+viewBox.y},
       shape: tool,
       svgRef: svgRef,
-    });
+    }
 
-    if (!shape) return;
+    setDrawings([...drawings, newShape]);
 
-    setDrawings([...drawings, shape]);
-
-    isDragging.current = false;
+    setPreview(null);
   };
 
   return (
@@ -84,6 +98,7 @@ function App() {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
       />
     </div>
   );
