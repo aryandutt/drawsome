@@ -3,6 +3,7 @@ import { GetShapeProps, ShapeMethodTypes } from "./types";
 import getShapeParams from "./getShapeParams";
 
 const getShape = ({ startPoint, endPoint, shape, svgRef }: GetShapeProps) => {
+
   if (!svgRef || !svgRef.current) return null; // returns if svgRef does not point to svg element
 
   const roughSvg = rough.svg(svgRef.current);
@@ -19,10 +20,8 @@ const getShape = ({ startPoint, endPoint, shape, svgRef }: GetShapeProps) => {
 
   const params = getShapeParams({ startPoint, endPoint, shape }); // a function that returns the right parameter given the set of start point, end point and the type of shape
 
-  const drawnShape = shapeFunction(
-    // @ts-ignore
-    ...params
-  );
+  //@ts-ignore
+  const drawnShape = shapeFunction(...params);
 
   return drawnShape; //returning the final shape which is drawn
 };

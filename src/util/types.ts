@@ -1,14 +1,15 @@
 import{ Dispatch, SetStateAction } from 'react'
 import { Options } from 'roughjs/bin/core';
 
-export enum shapes {
+export enum tools {
     Line = "line",
     Rectangle = "rectangle",
     Ellipse = "ellipse",
     Circle = "circle",
+    Pointer = "pointer",
 }
 
-export type tool = `${shapes}` | 'pointer' | 'select';
+export type tool = `${tools}`;
 
 export interface CoordinateInterface {
     x: number;

@@ -13,6 +13,7 @@ const TopBar: React.FC<TopBarProps> = ({tool, setTool}) => {
       <input type="radio" value="rectangle" checked={tool === "rectangle"}/> Rectangle
       <input type="radio" value="ellipse" checked={tool === "ellipse"}/> Ellipse
       <input type="radio" value="circle" checked={tool === "circle"}/> Circle
+      <input type="radio" value="pointer" checked={tool === "pointer"}/> Pointer
     </div>
   )
 }

@@ -69,8 +69,6 @@ function App() {
 
     if (!shape) return;
 
-    console.log(shape);
-
     setDrawings([...drawings, shape]);
 
     isDragging.current = false;

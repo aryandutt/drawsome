@@ -1,10 +1,11 @@
-import { GetShapeParamsType, shapes } from "./types";
+import { GetShapeParamsType, tools } from "./types";
 
 const getShapeParams = ({ startPoint, endPoint, shape }: GetShapeParamsType): (number | object)[] => {
-  if (shape === shapes.Line)
+  
+  if (shape === tools.Line)
     return [startPoint.x, startPoint.y, endPoint.x, endPoint.y];
 
-  if (shape === shapes.Rectangle)
+  if (shape === tools.Rectangle)
     return [
       startPoint.x,
       startPoint.y,
@@ -12,7 +13,7 @@ const getShapeParams = ({ startPoint, endPoint, shape }: GetShapeParamsType): (n
       endPoint.y - startPoint.y,
     ];
 
-  if (shape === shapes.Ellipse)
+  if (shape === tools.Ellipse)
     return [
       startPoint.x + (endPoint.x - startPoint.x) / 2,
       startPoint.y + (endPoint.y - startPoint.y) / 2,
@@ -20,7 +21,7 @@ const getShapeParams = ({ startPoint, endPoint, shape }: GetShapeParamsType): (n
       endPoint.y - startPoint.y,
     ];
 
-  if (shape === shapes.Circle)
+  if (shape === tools.Circle)
     return [
       startPoint.x + ((endPoint.x - startPoint.x) / 2),
       startPoint.y + ((endPoint.y - startPoint.y) / 2),
