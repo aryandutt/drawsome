@@ -2,7 +2,7 @@ import rough from "roughjs";
 import { GetShapeProps, ShapeMethodTypes, Tools } from "./types";
 import getShapeParams from "./getShapeParams";
 
-const getShape = ({ startPoint, endPoint, shape, svgRef }: GetShapeProps) => {
+const getShape = ({ pointPath, startPoint, endPoint, shape, svgRef }: GetShapeProps) => {
 
   if (!svgRef || !svgRef.current || shape === Tools.Pointer) return null; // returns if svgRef does not point to svg element
 
@@ -14,13 +14,16 @@ const getShape = ({ startPoint, endPoint, shape, svgRef }: GetShapeProps) => {
     rectangle: roughSvg.rectangle.bind(roughSvg),
     ellipse: roughSvg.ellipse.bind(roughSvg),
     circle: roughSvg.circle.bind(roughSvg),
+    pen: roughSvg.path.bind(roughSvg),
   };
 
   const shapeFunction = shapeMethods[shape as keyof ShapeMethodTypes]; // fetching the function corresponding to the shape
 
-  const params = getShapeParams({ startPoint, endPoint, shape }); // a function that returns the right parameter given the set of start point, end point and the type of shape
+  const params = getShapeParams({ pointPath, startPoint, endPoint, shape }); // a function that returns the right parameter given the set of start point, end point and the type of shape
 
   //@ts-ignore
+
+  
   const drawnShape = shapeFunction(...params);
 
   return drawnShape; //returning the final shape which is drawn

@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { CoordinateInterface, DrawingsElement, Tools, ToolsType } from "./util/types";
+import {
+  CoordinateInterface,
+  DrawingsElement,
+  Tools,
+  ToolsType,
+} from "./util/types";
 import TopBar from "./components/TopBar";
 import getShape from "./util/getShape";
 
@@ -7,81 +12,119 @@ function App() {
   const [tool, setTool] = useState<ToolsType>("line");
   const [drawings, setDrawings] = useState<DrawingsElement[]>([]);
   const [preview, setPreview] = useState<SVGElement | null>(null);
-  const [viewBox, setViewBox] = useState({ x: 0, y: 0, w: window.innerWidth, h: window.innerHeight });
+  const [viewBox, setViewBox] = useState({
+    x: 0,
+    y: 0,
+    w: window.innerWidth,
+    h: window.innerHeight,
+  });
+  const [penPath, setPenPath] = useState<CoordinateInterface[]>([]);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const isDragging = useRef<boolean>(false);
 
-  const [startPoint, setStartPoint] = useState<CoordinateInterface>({x: 0, y: 0});
+  const [startPoint, setStartPoint] = useState<CoordinateInterface>({
+    x: 0,
+    y: 0,
+  });
 
   const [endPoint, setEndPoint] = useState<CoordinateInterface>({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!svgRef.current) return;
 
+    console.log(penPath);
+
     svgRef.current.innerHTML = "";
 
     drawings.forEach((child) => {
-      const shape = getShape({startPoint: child.startPoint, endPoint: child.endPoint, shape: child.shape, svgRef})
-      if(!shape) return;
+
+      const shape = getShape({
+        pointPath: child.pointPath,
+        startPoint: child.startPoint,
+        endPoint: child.endPoint,
+        shape: child.shape,
+        svgRef,
+      });
+
+      if (!shape) return;
+
       svgRef.current?.appendChild(shape);
     });
 
-    if(!preview) return;
+
+    if (!preview) return;
 
     svgRef.current?.appendChild(preview);
     
   }, [drawings, preview]);
 
-
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     isDragging.current = true;
     setStartPoint({ x: e.clientX, y: e.clientY });
     setEndPoint({ x: e.clientX, y: e.clientY });
+    if (tool === Tools.Pen) setPenPath([{ x: e.clientX + viewBox.x, y: e.clientY + viewBox.y}]);
   };
 
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     if (!isDragging.current) return;
 
-    if(tool === Tools.Pointer){
+    if (tool === Tools.Pointer) {
       const dx = e.clientX - startPoint.x;
       const dy = e.clientY - startPoint.y;
       setViewBox({
         x: viewBox.x - dx,
         y: viewBox.y - dy,
         w: viewBox.w,
-        h: viewBox.h
+        h: viewBox.h,
       });
-      setStartPoint({x: e.clientX, y: e.clientY});
+      setStartPoint({ x: e.clientX, y: e.clientY });
       return;
+    }
+
+    if (tool === Tools.Pen) {
+      setPenPath([
+        ...penPath,
+        { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y }
+      ]);
     }
 
     setEndPoint({ x: e.clientX, y: e.clientY });
 
     const shape = getShape({
-      startPoint: {x: startPoint.x + viewBox.x, y: startPoint.y+viewBox.y},
-      endPoint: {x: endPoint.x+ viewBox.x, y: endPoint.y+viewBox.y},
+      startPoint: { x: startPoint.x + viewBox.x, y: startPoint.y + viewBox.y },
+      endPoint: { x: endPoint.x + viewBox.x, y: endPoint.y + viewBox.y },
       shape: tool,
+      pointPath: [
+        ...penPath,
+        { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y },
+      ],
       svgRef: svgRef,
     });
 
     if (!shape) return;
 
     setPreview(shape);
-
   };
 
-  const handleMouseUp = () => {
-
+  const handleMouseUp = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     isDragging.current = false;
 
+    if (tool === Tools.Pen) {
+      setPenPath([
+        ...penPath,
+        { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y },
+      ]);
+    }
+
     const newShape = {
-      startPoint: {x: startPoint.x + viewBox.x, y: startPoint.y+viewBox.y},
-      endPoint: {x: endPoint.x+ viewBox.x, y: endPoint.y+viewBox.y},
+      startPoint: { x: startPoint.x + viewBox.x, y: startPoint.y + viewBox.y },
+      endPoint: { x: endPoint.x + viewBox.x, y: endPoint.y + viewBox.y },
+      pointPath: penPath,
       shape: tool,
       svgRef: svgRef,
-    }
+    };
 
     setDrawings([...drawings, newShape]);
 
@@ -89,7 +132,7 @@ function App() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative flex justify-center">
       <TopBar tool={tool} setTool={setTool} />
       <svg
         ref={svgRef}

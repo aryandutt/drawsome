@@ -6,6 +6,7 @@ export enum Tools {
     Rectangle = "rectangle",
     Ellipse = "ellipse",
     Circle = "circle",
+    Pen = "pen",
     Pointer = "pointer",
 }
 
@@ -21,16 +22,14 @@ export interface TopBarProps {
     tool: string;
 }
 
-export interface GetShapeProps {
-    startPoint: CoordinateInterface;
-    endPoint: CoordinateInterface;
-    shape: string;
+export interface GetShapeProps extends DrawingsElement{
     svgRef: React.MutableRefObject<SVGSVGElement | null>;
 }
 
 export interface DrawingsElement {
     startPoint: CoordinateInterface;
     endPoint: CoordinateInterface;
+    pointPath?: CoordinateInterface[];
     shape: ToolsType;
 }
 
@@ -39,9 +38,11 @@ export interface ShapeMethodTypes {
     rectangle: (x: number, y: number, width: number, height: number, options?: Options | undefined) => SVGGElement;
     ellipse: (x: number, y: number, width: number, height: number, options?: Options | undefined) => SVGGElement;
     circle: (x: number, y: number, diameter: number, options?: Options | undefined) => SVGGElement;
+    pen: (d: string, options?: Options) => SVGGElement;
 }
 
 export interface GetShapeParamsType {
-    startPoint: CoordinateInterface; endPoint: CoordinateInterface;
+    startPoint: CoordinateInterface; 
+    endPoint: CoordinateInterface;
     shape: string;
 }
