@@ -2,15 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import {
   CoordinateInterface,
   DrawingsElement,
+  Keys,
   Tools,
   ToolsType,
 } from "./util/types";
 import TopBar from "./components/TopBar";
 import getShape from "./util/getShape";
+import useHistoryState from "./util/hooks/useHistory";
 
 function App() {
-  const [tool, setTool] = useState<ToolsType>("line");
-  const [drawings, setDrawings] = useState<DrawingsElement[]>([]);
+  const [tool, setTool] = useState<ToolsType>(Tools.Line);
+  // const [drawings, setDrawings] = useState<DrawingsElement[]>([]);
+  const [drawings, setDrawings, undo, redo] = useHistoryState<
+    DrawingsElement[]
+  >([]);
   const [preview, setPreview] = useState<SVGElement | null>(null);
   const [viewBox, setViewBox] = useState({
     x: 0,
@@ -34,12 +39,9 @@ function App() {
   useEffect(() => {
     if (!svgRef.current) return;
 
-    console.log(penPath);
-
     svgRef.current.innerHTML = "";
 
     drawings.forEach((child) => {
-
       const shape = getShape({
         pointPath: child.pointPath,
         startPoint: child.startPoint,
@@ -48,23 +50,49 @@ function App() {
         svgRef,
       });
 
-      if (!shape) return;
-
-      svgRef.current?.appendChild(shape);
+      if (shape) {
+        svgRef.current?.appendChild(shape);
+      }
     });
+  }, [drawings]);
 
+  useEffect(() => {
+    const undoRedoFunction = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        if (event.key === Keys.Z) {
+          if (event.shiftKey) {
+            redo();
+          } else {
+            undo();
+          }
+        } else if (event.key === Keys.Y) {
+          redo();
+        }
+      }
+    };
 
-    if (!preview) return;
+    document.addEventListener("keydown", undoRedoFunction);
+    return () => {
+      document.removeEventListener("keydown", undoRedoFunction);
+    };
+  }, [undo, redo]);
 
-    svgRef.current?.appendChild(preview);
-    
-  }, [drawings, preview]);
+  useEffect(() => {
+    if (!svgRef.current || !preview) return;
+
+    const appendedPreview = svgRef.current.appendChild(preview);
+
+    return () => {
+      svgRef.current?.removeChild(appendedPreview);
+    };
+  }, [preview]);
 
   const handleMouseDown = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     isDragging.current = true;
     setStartPoint({ x: e.clientX, y: e.clientY });
     setEndPoint({ x: e.clientX, y: e.clientY });
-    if (tool === Tools.Pen) setPenPath([{ x: e.clientX + viewBox.x, y: e.clientY + viewBox.y}]);
+    if (tool === Tools.Pen)
+      setPenPath([{ x: e.clientX + viewBox.x, y: e.clientY + viewBox.y }]);
   };
 
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
@@ -86,7 +114,7 @@ function App() {
     if (tool === Tools.Pen) {
       setPenPath([
         ...penPath,
-        { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y }
+        { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y },
       ]);
     }
 
@@ -121,7 +149,10 @@ function App() {
     const newShape = {
       startPoint: { x: startPoint.x + viewBox.x, y: startPoint.y + viewBox.y },
       endPoint: { x: endPoint.x + viewBox.x, y: endPoint.y + viewBox.y },
-      pointPath: penPath,
+      pointPath: [
+        ...penPath,
+        { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y },
+      ],
       shape: tool,
       svgRef: svgRef,
     };
@@ -129,6 +160,10 @@ function App() {
     setDrawings([...drawings, newShape]);
 
     setPreview(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<SVGSVGElement>) => {
+    console.log(e);
   };
 
   return (
@@ -141,6 +176,7 @@ function App() {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
+        onKeyDown={handleKeyDown}
         viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
       />
     </div>
