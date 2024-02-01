@@ -11,8 +11,7 @@ import getShape from "./util/getShape";
 import useHistoryState from "./util/hooks/useHistory";
 
 function App() {
-  const [tool, setTool] = useState<ToolsType>(Tools.Line);
-  // const [drawings, setDrawings] = useState<DrawingsElement[]>([]);
+  const [tool, setTool] = useState<ToolsType>(Tools.Line);  
   const [drawings, setDrawings, undo, redo] = useHistoryState<
     DrawingsElement[]
   >([]);
@@ -162,10 +161,6 @@ function App() {
     setPreview(null);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<SVGSVGElement>) => {
-    console.log(e);
-  };
-
   return (
     <div className="relative flex justify-center">
       <TopBar tool={tool} setTool={setTool} />
@@ -176,7 +171,6 @@ function App() {
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onKeyDown={handleKeyDown}
         viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
       />
     </div>
