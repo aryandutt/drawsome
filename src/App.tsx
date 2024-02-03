@@ -9,9 +9,11 @@ import {
 import TopBar from "./components/TopBar";
 import getShape from "./util/getShape";
 import useHistoryState from "./util/hooks/useHistory";
+import SideBar from "./components/SideBar";
+import erase from "./util/erase";
 
 function App() {
-  const [tool, setTool] = useState<ToolsType>(Tools.Line);  
+  const [tool, setTool] = useState<ToolsType>(Tools.Line);
   const [drawings, setDrawings, undo, redo] = useHistoryState<
     DrawingsElement[]
   >([]);
@@ -59,11 +61,8 @@ function App() {
     const undoRedoFunction = (event: KeyboardEvent) => {
       if (event.ctrlKey || event.metaKey) {
         if (event.key === Keys.Z) {
-          if (event.shiftKey) {
-            redo();
-          } else {
-            undo();
-          }
+          if (event.shiftKey) redo();
+          else undo();
         } else if (event.key === Keys.Y) {
           redo();
         }
@@ -110,6 +109,16 @@ function App() {
       return;
     }
 
+    if (tool === Tools.Eraser) {
+      erase(
+        e.clientX + viewBox.x,
+        e.clientY + viewBox.y,
+        drawings,
+        setDrawings
+      );
+      return;
+    }
+
     if (tool === Tools.Pen) {
       setPenPath([
         ...penPath,
@@ -138,6 +147,8 @@ function App() {
   const handleMouseUp = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     isDragging.current = false;
 
+    if (tool === Tools.Pointer || tool === Tools.Eraser) return;
+
     if (tool === Tools.Pen) {
       setPenPath([
         ...penPath,
@@ -164,6 +175,7 @@ function App() {
   return (
     <div className="relative flex justify-center">
       <TopBar tool={tool} setTool={setTool} />
+      {/* <SideBar/> */}
       <svg
         ref={svgRef}
         width={window.innerWidth}

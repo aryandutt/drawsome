@@ -7,6 +7,7 @@ export enum Tools {
   Ellipse = "ellipse",
   Circle = "circle",
   Pen = "pen",
+  Eraser = "eraser",
   Pointer = "pointer",
 }
 
@@ -78,8 +79,9 @@ export interface ShapeMethodTypes {
   pen: (d: string, options?: Options) => SVGGElement;
 }
 
-export interface GetShapeParamsType {
-  startPoint: CoordinateInterface;
-  endPoint: CoordinateInterface;
-  shape: string;
-}
+// export interface GetShapeParamsType {
+//   startPoint: CoordinateInterface;
+//   endPoint: CoordinateInterface;
+//   pointPath?: CoordinateInterface[];
+//   shape: "line" | "circle" | "rectangle" | "ellipse" | "pen";
+// }
