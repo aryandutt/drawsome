@@ -1,7 +1,7 @@
 import getStroke from "perfect-freehand";
 import rough from "roughjs";
-import { getSvgPathFromStroke } from "./getSvgPathFromStroke";
-import { CoordinateInterface, DrawingsElement, Tools } from "./types";
+import { getSvgPathFromStroke } from "../getSvgPathFromStroke";
+import { CoordinateInterface, DrawingsElement, Tools } from "../types";
 
 const seed = rough.newSeed();
 

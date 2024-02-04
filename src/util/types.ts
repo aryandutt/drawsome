@@ -9,6 +9,7 @@ export enum Tools {
   Pen = "pen",
   Eraser = "eraser",
   Pointer = "pointer",
+  Pan = "pan",
 }
 
 export enum Keys {
@@ -16,7 +17,24 @@ export enum Keys {
   Y = "y",
 }
 
-export type ToolsType = `${Tools}`;
+export enum ShortCutKeys {
+  L = "l",
+  H = "h",
+  A = "a",
+  R = "r",
+  C = "c",
+  E = "e",
+  P = "p",
+  O = "o",
+}
+
+export enum Cursor {
+  Crosshair = "crosshair",
+  Default = "default",
+  Move = "move",
+  Grab = "grab",
+  Grabbing = "grabbing",
+}
 
 export type InitialValueType<T> = T | ((prev?: T) => T);
 
@@ -33,8 +51,9 @@ export interface CoordinateInterface {
 }
 
 export interface TopBarProps {
-  setTool: Dispatch<SetStateAction<ToolsType>>;
-  tool: string;
+  setTool: Dispatch<SetStateAction<Tools>>;
+  setCursor: Dispatch<SetStateAction<Cursor>>;
+  tool: Tools;
 }
 
 export interface GetShapeProps extends DrawingsElement {
@@ -45,7 +64,7 @@ export interface DrawingsElement {
   startPoint: CoordinateInterface;
   endPoint: CoordinateInterface;
   pointPath?: CoordinateInterface[];
-  shape: ToolsType;
+  shape: Tools;
 }
 
 export interface ShapeMethodTypes {
@@ -78,10 +97,3 @@ export interface ShapeMethodTypes {
   ) => SVGGElement;
   pen: (d: string, options?: Options) => SVGGElement;
 }
-
-// export interface GetShapeParamsType {
-//   startPoint: CoordinateInterface;
-//   endPoint: CoordinateInterface;
-//   pointPath?: CoordinateInterface[];
-//   shape: "line" | "circle" | "rectangle" | "ellipse" | "pen";
-// }

@@ -1,6 +1,6 @@
 import { DrawingsElement, Tools } from "./types";
 
-const checkDrawing = (
+const checkPointOnDrawing = (
   drawing: DrawingsElement,
   x1: number,
   y1: number,
@@ -101,7 +101,6 @@ const checkDrawing = (
       centerY: number,
       radius: number
     ): boolean => {
-
       const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
 
       return Math.abs(distance - radius) <= 0.25;
@@ -120,15 +119,21 @@ const checkDrawing = (
   } else if (drawing.shape === Tools.Pen) {
     let flag: boolean = false;
 
-    const isNearPoint = (x: number, y: number, x1: number, y1: number, threshold: number): boolean => {
-        const distance = Math.sqrt((x - x1) ** 2 + (y - y1) ** 2);
-        return distance <= threshold;
+    const isNearPoint = (
+      x: number,
+      y: number,
+      x1: number,
+      y1: number,
+      threshold: number
+    ): boolean => {
+      const distance = Math.sqrt((x - x1) ** 2 + (y - y1) ** 2);
+      return distance <= threshold;
     };
 
     drawing.pointPath?.every((point) => {
-        flag = isNearPoint(point.x, point.y, x1, y1, threshold);
-        return !flag;
-    })
+      flag = isNearPoint(point.x, point.y, x1, y1, threshold);
+      return !flag;
+    });
 
     return flag;
   }
@@ -136,4 +141,4 @@ const checkDrawing = (
   return false;
 };
 
-export default checkDrawing;
+export default checkPointOnDrawing;

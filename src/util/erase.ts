@@ -1,4 +1,4 @@
-import checkDrawing from "./checkDrawing";
+import checkPointOnDrawing from "./checkPointOnDrawing";
 import { DrawingsElement, InitialValueType } from "./types";
 
 const erase = (
@@ -8,7 +8,7 @@ const erase = (
   setDrawings: (value: InitialValueType<DrawingsElement[]>) => void
 ) => {
   const erasedDrawings = drawings.filter(
-    (drawing) => !checkDrawing(drawing, x1, y1)
+    (drawing) => !checkPointOnDrawing(drawing, x1, y1)
   );
 
   if (erasedDrawings.length !== drawings.length) setDrawings(erasedDrawings);

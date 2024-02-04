@@ -1,19 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import {
   CoordinateInterface,
+  Cursor,
   DrawingsElement,
   Keys,
+  ShortCutKeys,
   Tools,
-  ToolsType,
 } from "./util/types";
 import TopBar from "./components/TopBar";
-import getShape from "./util/getShape";
+import getShape from "./util/shape/getShape";
 import useHistoryState from "./util/hooks/useHistory";
 import SideBar from "./components/SideBar";
 import erase from "./util/erase";
+import { cursorMap, shortCutMap } from "./util/config";
 
 function App() {
-  const [tool, setTool] = useState<ToolsType>(Tools.Line);
+  const [tool, setTool] = useState<Tools>(Tools.Line);
   const [drawings, setDrawings, undo, redo] = useHistoryState<
     DrawingsElement[]
   >([]);
@@ -25,7 +27,7 @@ function App() {
     h: window.innerHeight,
   });
   const [penPath, setPenPath] = useState<CoordinateInterface[]>([]);
-
+  const [cursor, setCursor] = useState<Cursor>(Cursor.Crosshair);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const isDragging = useRef<boolean>(false);
@@ -36,6 +38,25 @@ function App() {
   });
 
   const [endPoint, setEndPoint] = useState<CoordinateInterface>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const shortCut = (event: KeyboardEvent) => {
+      setTool(
+        shortCutMap[event.key as ShortCutKeys]
+          ? shortCutMap[event.key as ShortCutKeys]
+          : tool
+      );
+      setCursor(
+        cursorMap[event.key as ShortCutKeys]
+          ? cursorMap[event.key as ShortCutKeys]
+          : cursor
+      );
+    };
+    document.addEventListener("keydown", shortCut);
+    return () => {
+      document.removeEventListener("keydown", shortCut);
+    };
+  }, [tool, cursor]);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -97,6 +118,11 @@ function App() {
     if (!isDragging.current) return;
 
     if (tool === Tools.Pointer) {
+      //logic to move the shape
+    }
+
+    if (tool === Tools.Pan) {
+      setCursor(Cursor.Grabbing);
       const dx = e.clientX - startPoint.x;
       const dy = e.clientY - startPoint.y;
       setViewBox({
@@ -147,7 +173,9 @@ function App() {
   const handleMouseUp = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     isDragging.current = false;
 
-    if (tool === Tools.Pointer || tool === Tools.Eraser) return;
+    if (tool === Tools.Eraser) return;
+
+    if (tool === Tools.Pan) setCursor(Cursor.Grab);
 
     if (tool === Tools.Pen) {
       setPenPath([
@@ -174,9 +202,10 @@ function App() {
 
   return (
     <div className="relative flex justify-center">
-      <TopBar tool={tool} setTool={setTool} />
+      <TopBar tool={tool} setTool={setTool} setCursor={setCursor} />
       {/* <SideBar/> */}
       <svg
+        style={{ cursor: cursor }}
         ref={svgRef}
         width={window.innerWidth}
         height={window.innerHeight}
