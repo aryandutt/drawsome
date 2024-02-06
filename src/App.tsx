@@ -13,6 +13,7 @@ import useHistoryState from "./util/hooks/useHistory";
 import SideBar from "./components/SideBar";
 import erase from "./util/erase";
 import { cursorMap, shortCutMap } from "./util/config";
+import hoveredDrawing from "./util/hoveredDrawing";
 
 function App() {
   const [tool, setTool] = useState<Tools>(Tools.Line);
@@ -115,6 +116,13 @@ function App() {
   };
 
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    let ind: number;
+    if(tool === Tools.Pointer) {
+      ind = hoveredDrawing(drawings, e.clientX + viewBox.x, e.clientY + viewBox.y);
+      if(ind !==-1) setCursor(Cursor.Move)
+      else setCursor(Cursor.Default)
+    }
+
     if (!isDragging.current) return;
 
     if (tool === Tools.Pointer) {
