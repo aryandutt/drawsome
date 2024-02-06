@@ -33,6 +33,10 @@ function App() {
 
   const isDragging = useRef<boolean>(false);
 
+  const isDraggingShape = useRef<boolean>(false);
+
+  const [ind, setInd] = useState<number>(-1);
+
   const [startPoint, setStartPoint] = useState<CoordinateInterface>({
     x: 0,
     y: 0,
@@ -113,20 +117,43 @@ function App() {
     setEndPoint({ x: e.clientX, y: e.clientY });
     if (tool === Tools.Pen)
       setPenPath([{ x: e.clientX + viewBox.x, y: e.clientY + viewBox.y }]);
+    if (tool === Tools.Pointer) isDraggingShape.current = true;
   };
 
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    let ind: number;
-    if(tool === Tools.Pointer) {
-      ind = hoveredDrawing(drawings, e.clientX + viewBox.x, e.clientY + viewBox.y);
-      if(ind !==-1) setCursor(Cursor.Move)
-      else setCursor(Cursor.Default)
+    if (tool === Tools.Pointer && !isDraggingShape.current) {
+      const drawingIndex = hoveredDrawing(
+        drawings,
+        e.clientX + viewBox.x,
+        e.clientY + viewBox.y
+      );
+      setInd(drawingIndex);
+      if (drawingIndex !== -1) setCursor(Cursor.Move);
+      else setCursor(Cursor.Default);
     }
 
     if (!isDragging.current) return;
 
-    if (tool === Tools.Pointer) {
+    if (tool === Tools.Pointer && ind !== -1) {
       //logic to move the shape
+      const dx = e.clientX - startPoint.x;
+      const dy = e.clientY - startPoint.y;
+      setDrawings((prevDrawings) => {
+        const updatedDrawings = [...(prevDrawings || [])]; // Ensure prevDrawings is not undefined
+        updatedDrawings[ind] = {
+          startPoint: {
+            x: (prevDrawings?.[ind]?.startPoint?.x || 0) + dx,
+            y: (prevDrawings?.[ind]?.startPoint?.y || 0) + dy,
+          },
+          endPoint: {
+            x: (prevDrawings?.[ind]?.endPoint?.x || 0) + dx,
+            y: (prevDrawings?.[ind]?.endPoint?.y || 0) + dy,
+          },
+          shape: prevDrawings?.[ind]?.shape || Tools.Line,
+        };
+        return updatedDrawings;
+      });
+      setStartPoint({ x: e.clientX, y: e.clientY });
     }
 
     if (tool === Tools.Pan) {
@@ -141,9 +168,7 @@ function App() {
       });
       setStartPoint({ x: e.clientX, y: e.clientY });
       return;
-    }
-
-    if (tool === Tools.Eraser) {
+    } else if (tool === Tools.Eraser) {
       erase(
         e.clientX + viewBox.x,
         e.clientY + viewBox.y,
@@ -151,9 +176,7 @@ function App() {
         setDrawings
       );
       return;
-    }
-
-    if (tool === Tools.Pen) {
+    } else if (tool === Tools.Pen) {
       setPenPath([
         ...penPath,
         { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y },
@@ -184,6 +207,8 @@ function App() {
     if (tool === Tools.Eraser) return;
 
     if (tool === Tools.Pan) setCursor(Cursor.Grab);
+
+    if (tool === Tools.Pointer) isDraggingShape.current = false;
 
     if (tool === Tools.Pen) {
       setPenPath([
