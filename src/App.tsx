@@ -150,6 +150,9 @@ function App() {
             y: (prevDrawings?.[ind]?.endPoint?.y || 0) + dy,
           },
           shape: prevDrawings?.[ind]?.shape || Tools.Line,
+          pointPath: prevDrawings?.[ind]?.pointPath?.map((point) => {
+            return {x: point.x + dx, y: point.y + dy};
+          })
         };
         return updatedDrawings;
       });
