@@ -2,14 +2,14 @@ import { Dispatch, SetStateAction } from "react";
 import { Options } from "roughjs/bin/core";
 
 export enum Tools {
+  Pointer = "pointer",
+  Pan = "pan",
   Line = "line",
   Rectangle = "rectangle",
   Ellipse = "ellipse",
   Circle = "circle",
   Pen = "pen",
   Eraser = "eraser",
-  Pointer = "pointer",
-  Pan = "pan",
 }
 
 export enum Keys {

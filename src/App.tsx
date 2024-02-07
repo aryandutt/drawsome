@@ -16,7 +16,7 @@ import { cursorMap, shortCutMap } from "./util/config";
 import hoveredDrawing from "./util/hoveredDrawing";
 
 function App() {
-  const [tool, setTool] = useState<Tools>(Tools.Line);
+  const [tool, setTool] = useState<Tools>(Tools.Pointer);
   const [drawings, setDrawings, _setDrawings, undo, redo] = useHistoryState<
     // _setDrawings does not enable undo and redo
     DrawingsElement[]
