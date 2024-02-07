@@ -41,6 +41,7 @@ export type InitialValueType<T> = T | ((prev?: T) => T);
 export type ReturnValueType<T> = [
   T,
   (value: InitialValueType<T>) => void,
+  (value: InitialValueType<T>) => void,
   () => void,
   () => void
 ];

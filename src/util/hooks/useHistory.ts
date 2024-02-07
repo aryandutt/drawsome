@@ -37,7 +37,7 @@ const useHistoryState: <T>(
     setPointer((prev) => prev + 1);
   }, [pointer, history, setPointer]);
 
-  return [drawings, setDrawings, undo, redo];
+  return [drawings, setDrawings, _setDrawings, undo, redo];
 };
 
 export default useHistoryState;

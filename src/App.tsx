@@ -17,7 +17,8 @@ import hoveredDrawing from "./util/hoveredDrawing";
 
 function App() {
   const [tool, setTool] = useState<Tools>(Tools.Line);
-  const [drawings, setDrawings, undo, redo] = useHistoryState<
+  const [drawings, setDrawings, _setDrawings, undo, redo] = useHistoryState<
+    // _setDrawings does not enable undo and redo
     DrawingsElement[]
   >([]);
   const [preview, setPreview] = useState<SVGElement | null>(null);
@@ -80,6 +81,7 @@ function App() {
       if (shape) {
         svgRef.current?.appendChild(shape);
       }
+
     });
   }, [drawings]);
 
@@ -135,10 +137,9 @@ function App() {
     if (!isDragging.current) return;
 
     if (tool === Tools.Pointer && ind !== -1) {
-      //logic to move the shape
       const dx = e.clientX - startPoint.x;
       const dy = e.clientY - startPoint.y;
-      setDrawings((prevDrawings) => {
+      _setDrawings((prevDrawings) => {
         const updatedDrawings = [...(prevDrawings || [])]; // Ensure prevDrawings is not undefined
         updatedDrawings[ind] = {
           startPoint: {
@@ -151,8 +152,8 @@ function App() {
           },
           shape: prevDrawings?.[ind]?.shape || Tools.Line,
           pointPath: prevDrawings?.[ind]?.pointPath?.map((point) => {
-            return {x: point.x + dx, y: point.y + dy};
-          })
+            return { x: point.x + dx, y: point.y + dy };
+          }),
         };
         return updatedDrawings;
       });
