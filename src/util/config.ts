@@ -21,3 +21,14 @@ export const cursorMap = {
   [ShortCutKeys.P]: Cursor.Crosshair,
   [ShortCutKeys.O]: Cursor.Crosshair,
 };
+
+export const invertedShortCutMap: Record<Tools, ShortCutKeys> = {
+  [Tools.Pointer]: ShortCutKeys.A,
+  [Tools.Pan]: ShortCutKeys.H,
+  [Tools.Line]: ShortCutKeys.L,
+  [Tools.Rectangle]: ShortCutKeys.R,
+  [Tools.Circle]: ShortCutKeys.C,
+  [Tools.Eraser]: ShortCutKeys.E,
+  [Tools.Pen]: ShortCutKeys.P,
+  [Tools.Ellipse]: ShortCutKeys.O,
+};
