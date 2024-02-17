@@ -36,7 +36,7 @@ const TopBar: React.FC<TopBarProps> = ({ tool, setTool, setCursor }) => {
     >
       {Object.values(Tools).map((t, id) => (
         <div
-          className={`my-1 mx-1 p-3 rounded-lg ${
+          className={`my-1 mx-1 p-3 rounded-lg cursor-pointer ${
             tool === t ? "bg-violet-200" : "hover:bg-violet-100"
           }`}
           id={`tooltipId${id}`}

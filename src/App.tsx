@@ -210,11 +210,11 @@ function App() {
 
     if (tool === Tools.Eraser) return;
 
-    if (tool === Tools.Pan) setCursor(Cursor.Grab);
+    else if (tool === Tools.Pan) setCursor(Cursor.Grab);
 
-    if (tool === Tools.Pointer) isDraggingShape.current = false;
+    else if (tool === Tools.Pointer) isDraggingShape.current = false;
 
-    if (tool === Tools.Pen) {
+    else if (tool === Tools.Pen) {
       setPenPath([
         ...penPath,
         { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y },
