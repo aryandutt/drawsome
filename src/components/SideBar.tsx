@@ -1,6 +1,7 @@
 import Stroke from './sideBarComponents/Stroke'
 import Background from './sideBarComponents/Background'
 import Fill from './sideBarComponents/Fill'
+import StrokeWidth from './sideBarComponents/StrokeWidth'
 
 const SideBar = () => {
   return (
@@ -8,6 +9,7 @@ const SideBar = () => {
       <Stroke/>
       <Background/>
       <Fill/>
+      <StrokeWidth/>
     </div>
   )
 }
