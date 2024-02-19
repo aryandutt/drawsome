@@ -1,5 +1,11 @@
 import { Cursor, ShortCutKeys, Tools } from "./types";
 
+export const strokeColors = ["#1e1e1e", "#e03131", "#2f9e44", "#1971c2", "#f08c00"];
+
+export const backgroundColors = ["transparent", "#ffc9c9", "#b2f2bb", "#a5d8ff", "#ffec99"];
+
+export const transparentBackgroundUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAP3uCTZhw1gGGYhAGBZIA/nYDCgBDAm9BGDWAAJyRCgLaBCAAgXwixzAS0pgAAAABJRU5ErkJggg==";
+
 export const shortCutMap = {
   [ShortCutKeys.L]: Tools.Line,
   [ShortCutKeys.H]: Tools.Pan,

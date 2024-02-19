@@ -13,7 +13,7 @@ import { invertedShortCutMap } from "../util/config";
 const iconMap = {
   [Tools.Pointer]: <LuMousePointer />,
   [Tools.Rectangle]: <FiSquare />,
-  [Tools.Line]: <PiMinusBold />,
+  [Tools.Line]: <PiMinusBold className="rotate-[150deg]"/>,
   [Tools.Pen]: <LuPencil />,
   [Tools.Circle]: <FaRegCircle />,
   [Tools.Eraser]: <LuEraser />,
@@ -22,16 +22,15 @@ const iconMap = {
 };
 
 const TopBar: React.FC<TopBarProps> = ({ tool, setTool, setCursor }) => {
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const onChange = (t: Tools): void => {
     setCursor(Cursor.Crosshair);
-    if (e.target.value === Tools.Pointer) setCursor(Cursor.Default);
-    if (e.target.value === Tools.Pan) setCursor(Cursor.Grab);
-    setTool(e.target.value as Tools);
+    if (t === Tools.Pointer) setCursor(Cursor.Default);
+    if (t === Tools.Pan) setCursor(Cursor.Grab);
+    setTool(t as Tools);
   };
 
   return (
     <div
-      onChange={onChange}
       className="flex rounded-lg drop-shadow-[0px_0px_8px_rgba(0,0,0,0.15)] bg-white absolute mt-6 px-1 cursor-default"
     >
       {Object.values(Tools).map((t, id) => (
@@ -41,17 +40,8 @@ const TopBar: React.FC<TopBarProps> = ({ tool, setTool, setCursor }) => {
           }`}
           id={`tooltipId${id}`}
           key={t}
-          onClick={() => setTool(t)}
+          onClick={() => {setTool(t); onChange(t);}}
         >
-          <input
-            type="radio"
-            id={t}
-            checked={tool === t}
-            onChange={() => setTool(t)}
-            readOnly
-            hidden
-          />
-          <label htmlFor={t} />
           {iconMap[t]}
           <Tooltip anchorSelect={`#tooltipId${id}`} place="bottom">
             {`${t.charAt(0).toUpperCase() + t.slice(1)} (${invertedShortCutMap[t].toUpperCase()})`}

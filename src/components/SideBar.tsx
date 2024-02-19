@@ -1,8 +1,14 @@
-import React from 'react'
+import Stroke from './sideBarComponents/Stroke'
+import Background from './sideBarComponents/Background'
+import Fill from './sideBarComponents/Fill'
 
 const SideBar = () => {
   return (
-    <div className="absolute w-10 h-10 bg-red-500">SideBar</div>
+    <div className="absolute mx-4 mt-24 p-2 rounded-lg drop-shadow-[0px_0px_8px_rgba(0,0,0,0.15)] bg-white w-auto h-auto">
+      <Stroke/>
+      <Background/>
+      <Fill/>
+    </div>
   )
 }
 

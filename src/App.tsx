@@ -238,20 +238,23 @@ function App() {
   };
 
   return (
-    <div className="relative flex justify-center">
-      <TopBar tool={tool} setTool={setTool} setCursor={setCursor} />
-      {/* <SideBar/> */}
-      <svg
-        style={{ cursor: cursor }}
-        ref={svgRef}
-        width={window.innerWidth}
-        height={window.innerHeight}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
-      />
+    <div className="relative">
+        <SideBar />
+      <div className="flex flex-col items-center">
+        <TopBar tool={tool} setTool={setTool} setCursor={setCursor} />
+        <svg
+          style={{ cursor: cursor }}
+          ref={svgRef}
+          width={window.innerWidth}
+          height={window.innerHeight}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
+        />
+      </div>
     </div>
+
   );
 }
 
