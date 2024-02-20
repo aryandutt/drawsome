@@ -58,7 +58,7 @@ const getShapeParams = ({
     });
 
     return penPathArray
-      ? [getSvgPathFromStroke(penPathArray), { seed, ...options }]
+      ? [getSvgPathFromStroke(penPathArray), { seed, ...options, fill: options?.stroke }]
       : [];
   }
 };

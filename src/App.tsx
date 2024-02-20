@@ -258,7 +258,7 @@ function App() {
             tool === Tools.Pen
           }
         >
-          <SideBar options={options} setOptions={setOptions} />
+          <SideBar options={options} setOptions={setOptions} tool={tool}/>
         </Show.When>
       </Show>
 

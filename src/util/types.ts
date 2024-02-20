@@ -112,6 +112,7 @@ export interface OptionsInterface {
 export interface SideBarProps {
   options: OptionsInterface;
   setOptions: Dispatch<SetStateAction<OptionsInterface>>;
+  tool?: Tools;
 }
 
 export interface ShowProps {
