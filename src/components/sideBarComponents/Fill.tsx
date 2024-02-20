@@ -12,9 +12,9 @@ const Fill: React.FC<SideBarProps> = ({ options, setOptions }) => {
           } w-fit rounded-lg mx-1`}
           onClick={() => setOptions({ ...options, fillStyle: "hachure" })}
         >
-          <img
+            <img
             className="w-8 h-8 object-none scale-[.5] border-2 border-slate-900 rounded-lg"
-            src="../../../public/hachet.png"
+            src="./hachet.png"
           />
         </button>
         <button
@@ -27,7 +27,7 @@ const Fill: React.FC<SideBarProps> = ({ options, setOptions }) => {
         >
           <img
             className="w-8 h-8 object-none scale-[.5] border-2 border-slate-900 rounded-lg"
-            src="../../../public/cross-hatch.png"
+            src="./cross-hatch.png"
           />
         </button>
         <button
