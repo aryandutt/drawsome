@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction } from "react";
 import { Options } from "roughjs/bin/core";
 
 export enum Tools {
@@ -59,6 +59,7 @@ export interface TopBarProps {
 
 export interface GetShapeProps extends DrawingsElement {
   svgRef: React.MutableRefObject<SVGSVGElement | null>;
+  options?: OptionsInterface;
 }
 
 export interface DrawingsElement {
@@ -66,6 +67,7 @@ export interface DrawingsElement {
   endPoint: CoordinateInterface;
   pointPath?: CoordinateInterface[];
   shape: Tools;
+  options?: OptionsInterface;
 }
 
 export interface ShapeMethodTypes {
@@ -97,4 +99,21 @@ export interface ShapeMethodTypes {
     options?: Options | undefined
   ) => SVGGElement;
   pen: (d: string, options?: Options) => SVGGElement;
+}
+
+export interface OptionsInterface {
+  stroke: String;
+  fill: String;
+  fillStyle: "solid" | "hachure" | "cross-hatch";
+  strokeWidth: 1 | 2 | 3;
+  roughness: 0 | 1 | 2;
+}
+
+export interface SideBarProps {
+  options: OptionsInterface;
+  setOptions: Dispatch<SetStateAction<OptionsInterface>>;
+}
+
+export interface ShowProps {
+  children: ReactNode;
 }

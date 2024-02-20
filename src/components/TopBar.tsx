@@ -31,11 +31,11 @@ const TopBar: React.FC<TopBarProps> = ({ tool, setTool, setCursor }) => {
 
   return (
     <div
-      className="flex rounded-lg drop-shadow-[0px_0px_8px_rgba(0,0,0,0.15)] bg-white absolute mt-6 px-1 cursor-default"
+      className="flex rounded-lg drop-shadow-[0px_0px_8px_rgba(0,0,0,0.15)] bg-white absolute mt-8 px-1 cursor-default"
     >
       {Object.values(Tools).map((t, id) => (
         <div
-          className={`my-1 mx-1 p-3 rounded-lg cursor-pointer ${
+          className={`m-1 p-3 rounded-lg cursor-pointer ${
             tool === t ? "bg-violet-200" : "hover:bg-violet-100"
           }`}
           id={`tooltipId${id}`}

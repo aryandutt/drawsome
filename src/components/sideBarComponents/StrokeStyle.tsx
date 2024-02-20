@@ -1,10 +1,10 @@
-import React from 'react'
 import { RxBorderDotted } from "react-icons/rx";
 import { TfiLineDashed } from "react-icons/tfi";
 import { PiMinusThin } from "react-icons/pi";
+import React from "react";
 
 
-const StrokeStyle = () => {
+const StrokeStyle: React.FC = () => {
   return (
     <div className='mt-4'>
             <div className='text-xs mb-2 text-gray-700'>Stroke Style</div>

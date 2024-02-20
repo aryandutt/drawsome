@@ -4,6 +4,7 @@ import {
   Cursor,
   DrawingsElement,
   Keys,
+  OptionsInterface,
   ShortCutKeys,
   Tools,
 } from "./util/types";
@@ -14,9 +15,17 @@ import SideBar from "./components/SideBar";
 import erase from "./util/erase";
 import { cursorMap, shortCutMap } from "./util/config";
 import hoveredDrawing from "./util/hoveredDrawing";
+import { Show } from "./components/Show";
 
 function App() {
   const [tool, setTool] = useState<Tools>(Tools.Pointer);
+  const [options, setOptions] = useState<OptionsInterface>({
+    stroke: "black",
+    fill: "transparent",
+    fillStyle: "solid",
+    strokeWidth: 2,
+    roughness: 1,
+  });
   const [drawings, setDrawings, _setDrawings, undo, redo] = useHistoryState<
     // _setDrawings does not enable undo and redo
     DrawingsElement[]
@@ -76,12 +85,12 @@ function App() {
         endPoint: child.endPoint,
         shape: child.shape,
         svgRef,
+        options: child.options,
       });
 
       if (shape) {
         svgRef.current?.appendChild(shape);
       }
-
     });
   }, [drawings]);
 
@@ -154,6 +163,7 @@ function App() {
           pointPath: prevDrawings?.[ind]?.pointPath?.map((point) => {
             return { x: point.x + dx, y: point.y + dy };
           }),
+          options: prevDrawings?.[ind]?.options,
         };
         return updatedDrawings;
       });
@@ -198,6 +208,7 @@ function App() {
         { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y },
       ],
       svgRef: svgRef,
+      options: options,
     });
 
     if (!shape) return;
@@ -209,11 +220,8 @@ function App() {
     isDragging.current = false;
 
     if (tool === Tools.Eraser) return;
-
     else if (tool === Tools.Pan) setCursor(Cursor.Grab);
-
     else if (tool === Tools.Pointer) isDraggingShape.current = false;
-
     else if (tool === Tools.Pen) {
       setPenPath([
         ...penPath,
@@ -230,6 +238,7 @@ function App() {
       ],
       shape: tool,
       svgRef: svgRef,
+      options,
     };
 
     setDrawings([...drawings, newShape]);
@@ -239,7 +248,20 @@ function App() {
 
   return (
     <div className="relative">
-        <SideBar />
+      <Show>
+        <Show.When
+          isTrue={
+            tool === Tools.Circle ||
+            tool === Tools.Ellipse ||
+            tool === Tools.Line ||
+            tool === Tools.Rectangle ||
+            tool === Tools.Pen
+          }
+        >
+          <SideBar options={options} setOptions={setOptions} />
+        </Show.When>
+      </Show>
+
       <div className="flex flex-col items-center">
         <TopBar tool={tool} setTool={setTool} setCursor={setCursor} />
         <svg
@@ -254,7 +276,6 @@ function App() {
         />
       </div>
     </div>
-
   );
 }
 
