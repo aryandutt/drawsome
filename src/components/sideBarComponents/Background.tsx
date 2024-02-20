@@ -2,8 +2,8 @@ import { backgroundColors, transparentBackgroundUrl } from '../../util/config'
 
 const Background = () => {
     return (
-        <div className='mt-2'>
-            <div className='text-xs mb-2'>Background</div>
+        <div className='mt-4'>
+            <div className='text-xs mb-2 text-gray-700'>Background</div>
             <div className='flex justify-center items-center'>
                 {backgroundColors.map((color, index) => {
                     return (

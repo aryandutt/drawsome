@@ -40,7 +40,7 @@ const TopBar: React.FC<TopBarProps> = ({ tool, setTool, setCursor }) => {
           }`}
           id={`tooltipId${id}`}
           key={t}
-          onClick={() => {setTool(t); onChange(t);}}
+          onClick={() => {onChange(t);}}
         >
           {iconMap[t]}
           <Tooltip anchorSelect={`#tooltipId${id}`} place="bottom">

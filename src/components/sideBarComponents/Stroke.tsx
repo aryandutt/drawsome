@@ -3,7 +3,7 @@ import { strokeColors } from '../../util/config'
 const Stroke = () => {
     return (
         <>
-            <div className='text-xs mb-2'>Stroke</div>
+            <div className='text-xs mb-2 text-gray-700'>Stroke</div>
             <div className='flex justify-center items-center'>
                 {strokeColors.map((color, index) => {
                     return <button key={index} className="w-6 h-6 rounded-md mx-1" style={{ backgroundColor: color }} />
