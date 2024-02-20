@@ -1,3 +1,4 @@
+import { stringify } from "flatted";
 import checkPointOnDrawing from "./checkPointOnDrawing";
 import { DrawingsElement, InitialValueType } from "./types";
 
@@ -11,7 +12,10 @@ const erase = (
     (drawing) => !checkPointOnDrawing(drawing, x1, y1)
   );
 
-  if (erasedDrawings.length !== drawings.length) setDrawings(erasedDrawings);
+  if (erasedDrawings.length !== drawings.length) {
+    setDrawings(erasedDrawings);
+    localStorage.setItem("drawings", stringify(erasedDrawings));
+  }
 };
 
 export default erase;

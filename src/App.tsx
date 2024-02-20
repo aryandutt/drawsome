@@ -16,6 +16,7 @@ import erase from "./util/erase";
 import { cursorMap, shortCutMap } from "./util/config";
 import hoveredDrawing from "./util/hoveredDrawing";
 import { Show } from "./components/Show";
+import { stringify, parse } from 'flatted';
 
 function App() {
   const [tool, setTool] = useState<Tools>(Tools.Pointer);
@@ -27,9 +28,17 @@ function App() {
     roughness: 1,
   });
   const [drawings, setDrawings, _setDrawings, undo, redo] = useHistoryState<
-    // _setDrawings does not enable undo and redo
-    DrawingsElement[]
+  // _setDrawings does not enable undo and redo
+  DrawingsElement[]
   >([]);
+  useEffect(() => {
+    const localDrawings = localStorage.getItem("drawings");
+    if(localDrawings) {
+      setDrawings(parse(localDrawings, (_key: any, value: any) => {
+        return value;
+      }));
+    }
+  },[])
   const [preview, setPreview] = useState<SVGElement | null>(null);
   const [viewBox, setViewBox] = useState({
     x: 0,
@@ -38,7 +47,7 @@ function App() {
     h: window.innerHeight,
   });
   const [penPath, setPenPath] = useState<CoordinateInterface[]>([]);
-  const [cursor, setCursor] = useState<Cursor>(Cursor.Crosshair);
+  const [cursor, setCursor] = useState<Cursor>(Cursor.Default);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   const isDragging = useRef<boolean>(false);
@@ -56,6 +65,7 @@ function App() {
 
   useEffect(() => {
     const shortCut = (event: KeyboardEvent) => {
+      if(event.ctrlKey || event.metaKey) return;
       setTool(
         shortCutMap[event.key as ShortCutKeys]
           ? shortCutMap[event.key as ShortCutKeys]
@@ -241,7 +251,11 @@ function App() {
       options,
     };
 
-    setDrawings([...drawings, newShape]);
+    const updatedDrawings = [...drawings, newShape];
+
+    setDrawings(updatedDrawings);
+
+    localStorage.setItem("drawings", stringify(updatedDrawings));
 
     setPreview(null);
   };
