@@ -58,7 +58,7 @@ const getShapeParams = ({
     });
 
     return penPathArray
-      ? [getSvgPathFromStroke(penPathArray), { seed, ...options, fillStyle: 'solid', fill: options?.stroke }]
+      ? [getSvgPathFromStroke(penPathArray), { seed, ...options, roughness: 0, fillStyle: 'solid', fill: options?.stroke }]
       : [];
   }
 };
