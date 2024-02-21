@@ -33,8 +33,14 @@ function App() {
   >([]);
   useEffect(() => {
     const localDrawings = localStorage.getItem("drawings");
+    const localViewBox = localStorage.getItem("viewBox");
     if(localDrawings) {
       setDrawings(parse(localDrawings, (_key: any, value: any) => {
+        return value;
+      }));
+    }
+    if(localViewBox){
+      setViewBox(parse(localViewBox, (_key: any, value: any) => {
         return value;
       }));
     }
@@ -184,12 +190,14 @@ function App() {
       setCursor(Cursor.Grabbing);
       const dx = e.clientX - startPoint.x;
       const dy = e.clientY - startPoint.y;
-      setViewBox({
+      const updatedViewBox = {
         x: viewBox.x - dx,
         y: viewBox.y - dy,
         w: viewBox.w,
         h: viewBox.h,
-      });
+      };
+      setViewBox(updatedViewBox);
+      localStorage.setItem("viewBox", stringify(updatedViewBox));
       setStartPoint({ x: e.clientX, y: e.clientY });
       return;
     } else if (tool === Tools.Eraser) {
