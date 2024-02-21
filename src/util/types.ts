@@ -118,3 +118,8 @@ export interface SideBarProps {
 export interface ShowProps {
   children: ReactNode;
 }
+
+export interface ActionButtonsProps {
+  undo: () => void;
+  redo: () => void;
+}

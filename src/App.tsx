@@ -16,7 +16,9 @@ import erase from "./util/erase";
 import { cursorMap, shortCutMap } from "./util/config";
 import hoveredDrawing from "./util/hoveredDrawing";
 import { Show } from "./components/Show";
-import { stringify, parse } from 'flatted';
+import { stringify, parse } from "flatted";
+import ActionButtons from "./components/ActionButtons";
+import Github from "./components/Github";
 
 function App() {
   const [tool, setTool] = useState<Tools>(Tools.Pointer);
@@ -28,23 +30,27 @@ function App() {
     roughness: 1,
   });
   const [drawings, setDrawings, _setDrawings, undo, redo] = useHistoryState<
-  // _setDrawings does not enable undo and redo
-  DrawingsElement[]
+    // _setDrawings does not enable undo and redo
+    DrawingsElement[]
   >([]);
   useEffect(() => {
     const localDrawings = localStorage.getItem("drawings");
     const localViewBox = localStorage.getItem("viewBox");
-    if(localDrawings) {
-      setDrawings(parse(localDrawings, (_key: any, value: any) => {
-        return value;
-      }));
+    if (localDrawings) {
+      setDrawings(
+        parse(localDrawings, (_key: any, value: any) => {
+          return value;
+        })
+      );
     }
-    if(localViewBox){
-      setViewBox(parse(localViewBox, (_key: any, value: any) => {
-        return value;
-      }));
+    if (localViewBox) {
+      setViewBox(
+        parse(localViewBox, (_key: any, value: any) => {
+          return value;
+        })
+      );
     }
-  },[])
+  }, []);
   const [preview, setPreview] = useState<SVGElement | null>(null);
   const [viewBox, setViewBox] = useState({
     x: 0,
@@ -71,7 +77,7 @@ function App() {
 
   useEffect(() => {
     const shortCut = (event: KeyboardEvent) => {
-      if(event.ctrlKey || event.metaKey) return;
+      if (event.ctrlKey || event.metaKey) return;
       setTool(
         shortCutMap[event.key as ShortCutKeys]
           ? shortCutMap[event.key as ShortCutKeys]
@@ -280,7 +286,7 @@ function App() {
             tool === Tools.Pen
           }
         >
-          <SideBar options={options} setOptions={setOptions} tool={tool}/>
+          <SideBar options={options} setOptions={setOptions} tool={tool} />
         </Show.When>
       </Show>
 
@@ -297,6 +303,8 @@ function App() {
           viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
         />
       </div>
+      <ActionButtons undo={undo} redo={redo} />
+      <Github />
     </div>
   );
 }
