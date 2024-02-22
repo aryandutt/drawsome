@@ -1,8 +1,11 @@
 import { backgroundColors, transparentBackgroundUrl } from "../../util/config";
 import { SideBarProps } from "../../util/types";
-import { Popover, PopoverContent, PopoverTrigger } from "../Popover";
+import { Popover, PopoverArrow, PopoverContent, PopoverTrigger } from "../Popover";
+import { ColorPicker, useColor } from "react-color-palette";
+import "react-color-palette/css";
 
 const Background: React.FC<SideBarProps> = ({ options, setOptions }) => {
+  const [color, setColor] = useColor(options.fill);
   return (
     <div className="mt-4">
       <div className="text-xs mb-2 text-gray-700">Background</div>
@@ -25,7 +28,7 @@ const Background: React.FC<SideBarProps> = ({ options, setOptions }) => {
         })}
         <div className="w-px h-7 mx-1 bg-gray-400 opacity-40" />
         <Popover>
-          <PopoverTrigger>
+          <PopoverTrigger className="flex justify-center">
             <button
               className="w-6 h-6 rounded-[4px] mx-1"
               style={{
@@ -37,8 +40,16 @@ const Background: React.FC<SideBarProps> = ({ options, setOptions }) => {
               }}
             />
           </PopoverTrigger>
-          <PopoverContent sideOffset={10} side="right">Place content for the popover here.</PopoverContent>
-          {/* <PopoverArrow/> */}
+          <PopoverContent align="start" alignOffset={-20} sideOffset={20} side="right">
+            <ColorPicker hideInput={true} height={100}
+              color={color}
+              onChange={(color) => {
+                setColor(color);
+                setOptions({ ...options, fill: color.hex });
+              }}
+            />
+          <PopoverArrow width={20} height={10} fill="white"/>
+          </PopoverContent>
         </Popover>
       </div>
     </div>

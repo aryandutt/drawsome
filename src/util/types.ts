@@ -102,8 +102,8 @@ export interface ShapeMethodTypes {
 }
 
 export interface OptionsInterface {
-  stroke: String;
-  fill: String;
+  stroke: string;
+  fill: string;
   fillStyle: "solid" | "hachure" | "cross-hatch";
   strokeWidth: 1 | 2 | 3;
   roughness: 0 | 1 | 2;
