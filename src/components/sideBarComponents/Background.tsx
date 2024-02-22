@@ -1,5 +1,6 @@
 import { backgroundColors, transparentBackgroundUrl } from "../../util/config";
 import { SideBarProps } from "../../util/types";
+import { Popover, PopoverContent, PopoverTrigger } from "../Popover";
 
 const Background: React.FC<SideBarProps> = ({ options, setOptions }) => {
   return (
@@ -23,16 +24,22 @@ const Background: React.FC<SideBarProps> = ({ options, setOptions }) => {
           );
         })}
         <div className="w-px h-7 mx-1 bg-gray-400 opacity-40" />
-        <button
-          className="w-6 h-6 rounded-[4px] mx-1"
-          style={{
-            backgroundColor: options.fill as string,
-            backgroundImage:
-              options.fill === "transparent"
-                ? `url(${transparentBackgroundUrl})`
-                : "none",
-          }}
-        />
+        <Popover>
+          <PopoverTrigger>
+            <button
+              className="w-6 h-6 rounded-[4px] mx-1"
+              style={{
+                backgroundColor: options.fill as string,
+                backgroundImage:
+                  options.fill === "transparent"
+                    ? `url(${transparentBackgroundUrl})`
+                    : "none",
+              }}
+            />
+          </PopoverTrigger>
+          <PopoverContent sideOffset={10} side="right">Place content for the popover here.</PopoverContent>
+          {/* <PopoverArrow/> */}
+        </Popover>
       </div>
     </div>
   );
