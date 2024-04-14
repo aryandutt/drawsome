@@ -22,12 +22,12 @@ Drawsome is a web application that lets you unleash your creativity by drawing v
 
 ## 🛠️ Technologies Used
 
-- **React**: Framework for UI.
-- **TypeScript**: For type safety.
-- **RoughJS**: Rendering shapes.
-- **perfect-freehand**: Freehand pen strokes.
-- **flatted**: Efficient data storage.
-- **Tailwind CSS**: Styling.
+-   **React**: Framework for UI.
+-   **TypeScript**: For type safety.
+-   **RoughJS**: Rendering shapes.
+-   **perfect-freehand**: Freehand pen strokes.
+-   **flatted**: Efficient data storage.
+-   **Tailwind CSS**: Styling.
 
 ## Getting Started
 
@@ -50,7 +50,7 @@ We're constantly working to improve Drawsome and would love to hear your feedbac
 
 ## Contributors
 
-- Aryan Dutt (@aryandutt)
-- Harsh Pant ([@harsh11101](https://github.com/harsh11101))
+-   Aryan Dutt (@aryandutt)
+-   Harsh Pant ([@harsh11101](https://github.com/harsh11101))
 
 Let your creativity flow with Drawsome! 🎉
