@@ -33,24 +33,6 @@ function App() {
         // _setDrawings does not enable undo and redo
         DrawingsElement[]
     >([]);
-    useEffect(() => {
-        const localDrawings = localStorage.getItem('drawings');
-        const localViewBox = localStorage.getItem('viewBox');
-        if (localDrawings) {
-            setDrawings(
-                parse(localDrawings, (_key: any, value: any) => {
-                    return value;
-                })
-            );
-        }
-        if (localViewBox) {
-            setViewBox(
-                parse(localViewBox, (_key: any, value: any) => {
-                    return value;
-                })
-            );
-        }
-    }, []);
     const [preview, setPreview] = useState<SVGElement | null>(null);
     const [viewBox, setViewBox] = useState({
         x: 0,
@@ -77,6 +59,25 @@ function App() {
         x: 0,
         y: 0,
     });
+
+    useEffect(() => {
+        const localDrawings = localStorage.getItem('drawings');
+        const localViewBox = localStorage.getItem('viewBox');
+        if (localDrawings) {
+            setDrawings(
+                parse(localDrawings, (_key: any, value: any) => {
+                    return value;
+                })
+            );
+        }
+        if (localViewBox) {
+            setViewBox(
+                parse(localViewBox, (_key: any, value: any) => {
+                    return value;
+                })
+            );
+        }
+    }, []);
 
     useEffect(() => {
         const shortCut = (event: KeyboardEvent) => {
@@ -118,6 +119,28 @@ function App() {
             }
         });
     }, [drawings]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (!svgRef.current) return;
+
+            svgRef.current.setAttribute(
+                'height',
+                window.innerHeight.toString()
+            );
+            svgRef.current.setAttribute('width', window.innerWidth.toString());
+            setViewBox({
+                ...viewBox,
+                w: window.innerWidth,
+                h: window.innerHeight,
+            });
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            document.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     useEffect(() => {
         const undoRedoFunction = (event: KeyboardEvent) => {
@@ -312,7 +335,9 @@ function App() {
             <div className="flex flex-col items-center">
                 <TopBar tool={tool} setTool={setTool} setCursor={setCursor} />
                 <svg
-                    style={{ cursor: cursor }}
+                    style={{
+                        cursor,
+                    }}
                     ref={svgRef}
                     width={window.innerWidth}
                     height={window.innerHeight}
