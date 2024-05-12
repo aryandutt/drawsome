@@ -19,6 +19,7 @@ import { Show } from './components/Show';
 import { stringify, parse } from 'flatted';
 import ActionButtons from './components/ActionButtons';
 import Github from './components/Github';
+import Export from './components/Export';
 
 function App() {
     const [tool, setTool] = useState<Tools>(Tools.Pointer);
@@ -349,6 +350,7 @@ function App() {
             </div>
             <ActionButtons undo={undo} redo={redo} />
             <Github />
+            <Export svgRef={svgRef}/>
         </div>
     );
 }
