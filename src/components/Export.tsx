@@ -12,7 +12,7 @@ const Export = ({svgRef} : {svgRef: React.RefObject<SVGSVGElement>}) => {
     const handleMouseLeave = () => {
         setDropdownVisible(false);
     }
-    const handleExport = async (ext: string) => {
+    const handleExport = async (ext: 'jpg' | 'png' | 'tiff') => {
         if (!svgRef.current) return; 
       
         const canvas = document.createElement('canvas');
