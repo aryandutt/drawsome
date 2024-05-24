@@ -183,7 +183,23 @@ function App() {
             ]);
         if (tool === Tools.Pointer) isDraggingShape.current = true;
     };
-
+    const handleTouchStart = (e: React.TouchEvent<SVGSVGElement>) => {
+        e.preventDefault(); //Prevent default touch behavior to avoid unintended scrolling .
+        isDragging.current = true;
+        setStartPoint({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+        setEndPoint({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+        if (tool === Tools.Pen) {
+            setPenPath([
+                {
+                    x: e.touches[0].clientX + viewBox.x,
+                    y: e.touches[0].clientY,
+                },
+            ]);
+        }
+        if (tool === Tools.Pointer) {
+            isDraggingShape.current = true;
+        }
+    };
     const handleMouseMove = (
         e: React.MouseEvent<SVGSVGElement, MouseEvent>
     ) => {
@@ -275,6 +291,108 @@ function App() {
 
         setPreview(shape);
     };
+    const handleTouchMove = (e: React.TouchEvent<SVGSVGElement>) => {
+        // Prevent default touch behavior to avoid unintended scrolling etc.
+        e.preventDefault();
+
+        if (tool === Tools.Pointer && !isDraggingShape.current) {
+            const touch = e.touches[0];
+            const drawingIndex = hoveredDrawing(
+                drawings,
+                touch.clientX + viewBox.x,
+                touch.clientY + viewBox.y
+            );
+            setInd(drawingIndex);
+            if (drawingIndex !== -1) {
+                setCursor(Cursor.Move);
+            } else {
+                setCursor(Cursor.Default);
+            }
+        }
+
+        if (!isDragging.current) return;
+
+        if (tool === Tools.Pointer && ind !== -1) {
+            const touch = e.touches[0];
+            const dx = touch.clientX - startPoint.x;
+            const dy = touch.clientY - startPoint.y;
+            _setDrawings((prevDrawings) => {
+                const updatedDrawings = [...(prevDrawings || [])];
+                updatedDrawings[ind] = {
+                    startPoint: {
+                        x: (prevDrawings?.[ind]?.startPoint?.x || 0) + dx,
+                        y: (prevDrawings?.[ind]?.startPoint?.y || 0) + dy,
+                    },
+                    endPoint: {
+                        x: (prevDrawings?.[ind]?.endPoint?.x || 0) + dx,
+                        y: (prevDrawings?.[ind]?.endPoint?.y || 0) + dy,
+                    },
+                    shape: prevDrawings?.[ind]?.shape || Tools.Line,
+                    pointPath: prevDrawings?.[ind]?.pointPath?.map((point) => ({
+                        x: point.x + dx,
+                        y: point.y + dy,
+                    })),
+                    options: prevDrawings?.[ind]?.options,
+                };
+                return updatedDrawings;
+            });
+            setStartPoint({ x: touch.clientX, y: touch.clientY });
+        } else if (tool === Tools.Pan) {
+            setCursor(Cursor.Grabbing);
+            const touch = e.touches[0];
+            const dx = touch.clientX - startPoint.x;
+            const dy = touch.clientY - startPoint.y;
+            const updatedViewBox = {
+                x: viewBox.x - dx,
+                y: viewBox.y - dy,
+                w: viewBox.w,
+                h: viewBox.h,
+            };
+            setViewBox(updatedViewBox);
+            localStorage.setItem('viewBox', stringify(updatedViewBox));
+            setStartPoint({ x: touch.clientX, y: touch.clientY });
+            return;
+        } else if (tool === Tools.Eraser) {
+            const touch = e.touches[0];
+            erase(
+                touch.clientX + viewBox.x,
+                touch.clientY + viewBox.y,
+                drawings,
+                setDrawings
+            );
+            return;
+        } else if (tool === Tools.Pen) {
+            const touch = e.touches[0];
+            setPenPath([
+                ...penPath,
+                { x: touch.clientX + viewBox.x, y: touch.clientY + viewBox.y },
+            ]);
+        }
+
+        setEndPoint({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+
+        const shape = getShape({
+            startPoint: {
+                x: startPoint.x + viewBox.x,
+                y: startPoint.y + viewBox.y,
+            },
+            endPoint: { x: endPoint.x + viewBox.x, y: endPoint.y + viewBox.y },
+            shape: tool,
+            pointPath: [
+                ...penPath,
+                {
+                    x: e.touches[0].clientX + viewBox.x,
+                    y: e.touches[0].clientY + viewBox.y,
+                },
+            ],
+            svgRef: svgRef,
+            options: options,
+        });
+
+        if (!shape) return;
+
+        setPreview(shape);
+    };
 
     const handleMouseUp = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
         isDragging.current = false;
@@ -299,6 +417,42 @@ function App() {
                 ...penPath,
                 { x: e.clientX + viewBox.x, y: e.clientY + viewBox.y },
             ],
+            shape: tool,
+            svgRef: svgRef,
+            options,
+        };
+
+        const updatedDrawings = [...drawings, newShape];
+
+        setDrawings(updatedDrawings);
+
+        localStorage.setItem('drawings', stringify(updatedDrawings));
+
+        setPreview(null);
+    };
+    const handleTouchEnd = (e: React.TouchEvent<SVGSVGElement>) => {
+        isDragging.current = false;
+        const touch = e.changedTouches[0];
+        if (tool === Tools.Eraser) return;
+        else if (tool === Tools.Pan) setCursor(Cursor.Grab);
+        else if (tool === Tools.Pointer) isDraggingShape.current = false;
+        else if (tool === Tools.Pen) {
+            setPenPath([
+                ...penPath,
+                { x: touch.clientX + viewBox.x, y: touch.clientY + viewBox.y },
+            ]);
+        }
+
+        const newShape = {
+            startPoint: {
+                x: startPoint.x + viewBox.x,
+                y: startPoint.y + viewBox.y,
+            },
+            endPoint: { x: endPoint.x + viewBox.x, y: endPoint.y + viewBox.y },
+            pointPath: [
+                ...penPath,
+                { x: touch.clientX + viewBox.x, y: touch.clientY + viewBox.y },
+            ], // Handle case where touch may be undefined
             shape: tool,
             svgRef: svgRef,
             options,
@@ -345,12 +499,15 @@ function App() {
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                    onTouchMove={handleTouchMove}
                     viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
                 />
             </div>
             <ActionButtons undo={undo} redo={redo} />
             <Github />
-            <Export svgRef={svgRef}/>
+            <Export svgRef={svgRef} />
         </div>
     );
 }
