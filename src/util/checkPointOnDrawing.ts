@@ -54,9 +54,9 @@ const checkPointOnDrawing = (
                 (1.414 * 2)
         );
     } else if (drawing.shape === Tools.Pen) {
-        let flag: boolean = false;
+  let flag = false;
 
-        const isNearPoint = (
+  const isNearPoint = (
             x: number,
             y: number,
             x1: number,
@@ -67,14 +67,61 @@ const checkPointOnDrawing = (
             return distance <= threshold;
         };
 
-        drawing.pointPath?.every((point) => {
-            flag = isNearPoint(point.x, point.y, x1, y1, threshold);
-            return !flag;
-        });
+  const smoothedPath = smoothPath(drawing.pointPath); // Apply smoothing algorithm
 
-        return flag;
+  smoothedPath.every((point:any) => {
+    flag = isNearPoint(point.x, point.y, x1, y1, threshold);
+    return !flag;
+  });
+
+  return flag;
+}
+function smoothPath(path:any, tolerance = 1) {
+  // If path has less than 2 points, it's already simple, return it
+  if (path.length < 2) {
+    return path;
+  }
+
+  // Find the point with the maximum distance from the line formed by the first and last points
+  let farthestPointIndex = 0;
+  let farthestDistance = 0;
+  for (let i = 1; i < path.length - 1; i++) {
+    const distance = perpendicularDistance(path[0], path[path.length - 1], path[i]);
+    if (distance > farthestDistance) {
+      farthestPointIndex = i;
+      farthestDistance = distance;
     }
+  }
 
+  // If the farthest point is within the tolerance, the path is considered smooth
+  if (farthestDistance <= tolerance) {
+    return [path[0], path[path.length - 1]];
+  }
+
+  // Recursively simplify the two sub-paths formed by splitting at the farthest point
+  const simplifiedLeft:any = smoothPath(path.slice(0, farthestPointIndex + 1), tolerance);
+  const simplifiedRight:any = smoothPath(path.slice(farthestPointIndex), tolerance);
+
+  // Combine the simplified sub-paths
+  return [...simplifiedLeft.slice(0, simplifiedLeft.length - 1), ...simplifiedRight];
+}
+
+// Helper function to calculate the perpendicular distance from a point to a line segment
+function perpendicularDistance(p1:any, p2:any, p:any) {
+  const x1 = p1.x;
+  const y1 = p1.y;
+  const x2 = p2.x;
+  const y2 = p2.y;
+  const px = p.x;
+  const py = p.y;
+
+  const A = y2 - y1;
+  const B = x1 - x2;
+  const C = x1 * y2 - x2 * y1;
+
+  const distance = Math.abs(A * px + B * py + C) / Math.sqrt(A * A + B * B);
+  return distance;
+}
     return false;
 };
 
