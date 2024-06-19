@@ -3,7 +3,10 @@ import { onEllipse } from './onShape/onEllipse';
 import { onLineSegmentWithThreshold } from './onShape/onLineSegmentWithThreshold';
 import { onRectangleSide } from './onShape/onRectangleSide';
 import { DrawingsElement, Tools } from './types';
-
+interface Point {
+  x: number;
+  y: number;
+}
 const checkPointOnDrawing = (
     drawing: DrawingsElement,
     x1: number,
@@ -67,16 +70,17 @@ const checkPointOnDrawing = (
             return distance <= threshold;
         };
 
-        const smoothedPath = smoothPath(drawing.pointPath); // Apply smoothing algorithm
 
-        smoothedPath.every((point: { x: number; y: number }) => {
+
+        const smoothedPath = drawing.pointPath?.length ? smoothPath(drawing.pointPath) : []; // Apply smoothing algorithm
+        smoothedPath.every((point: Point) => {
             flag = isNearPoint(point.x, point.y, x1, y1, threshold);
             return !flag;
         });
 
         return flag;
     }
-    function smoothPath(path: any, tolerance = 1) {
+    function smoothPath(path: { x: number; y: number }[], tolerance = 1) {
         if (path.length < 2) {
             return path;
         }
