@@ -48,9 +48,4 @@ You can access Drawsome online at [Drawsome](https://drawsome-six.vercel.app/).
 
 We're constantly working to improve Drawsome and would love to hear your feedback! Feel free to reach out to us with any suggestions, bug reports, or feature requests.
 
-## Contributors
-
--   Aryan Dutt (@aryandutt)
--   Harsh Pant ([@harsh11101](https://github.com/harsh11101))
-
 Let your creativity flow with Drawsome! 🎉
